@@ -2,43 +2,66 @@ package com.createfuture.training.taskmanager.controller;
 
 import com.createfuture.training.taskmanager.model.Task;
 import com.createfuture.training.taskmanager.service.TaskService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
+import java.util.Arrays;
 
-@RestController
-@RequestMapping("/api/tasks")
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(TaskController.class)
 public class TaskControllerTest {
 
-    private final TaskService taskService;
-
     @Autowired
-    public TaskControllerTest(TaskService taskService) {
-        this.taskService = taskService;
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private TaskService taskService;
+
+    private Task sampleTask;
+
+    @BeforeEach
+    void setUp() {
+        sampleTask = new Task("Test Task");
+        when(taskService.getAllTasks()).thenReturn(Arrays.asList(sampleTask));
     }
 
-    // POST /api/tasks
-    @PostMapping
-    public void addTask(@RequestBody Task task) {
-        taskService.addTask(task);
+    @Test
+    void getHomePage_ReturnsTasksView() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("tasks"))
+                .andExpect(content().string(containsString("Test Task")));
     }
 
-    // GET /api/tasks
-    @GetMapping
-    public List<Task> getAllTasks() {
-        return taskService.getAllTasks();
+    @Test
+    void postAddTask_ShouldCallService() throws Exception {
+        mockMvc.perform(post("/add")
+                        .param("title", "New Task"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+
+        verify(taskService).addTask(Mockito.argThat(task -> task.getTitle().equals("New Task")));
     }
 
-    // GET /api/tasks/top?n=3
-    @GetMapping("/top")
-    public List<Task> getTopNTasks(@RequestParam(defaultValue = "3") int n) {
-        return taskService.getTopNTasks(n);
-    }
+    @Test
+    void postMarkTaskDone_ShouldCallService() throws Exception {
+        mockMvc.perform(post("/tasks/done/Test Task"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
 
-    // DELETE /api/tasks?title=TaskTitle
-    @DeleteMapping
-    public boolean markTaskDone(@RequestParam String title) {
-        return taskService.markDone(title);
+        verify(taskService).markDone("Test Task");
     }
 }

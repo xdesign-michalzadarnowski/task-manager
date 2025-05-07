@@ -3,12 +3,11 @@ package com.createfuture.training.taskmanager.controller;
 import com.createfuture.training.taskmanager.model.Task;
 import com.createfuture.training.taskmanager.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@RestController
-@RequestMapping("/api/tasks")
+@Controller
 public class TaskController {
 
     private final TaskService taskService;
@@ -18,27 +17,23 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    // POST /api/tasks
-    @PostMapping
-    public void addTask(@RequestBody Task task) {
+    @GetMapping("/")
+    public String home(Model model) {
+        model.addAttribute("task", new Task());
+        model.addAttribute("tasks", taskService.getAllTasks());
+        return "tasks";
+    }
+
+    @PostMapping("/add")
+    public String addTask(@ModelAttribute Task task) {
         taskService.addTask(task);
+        return "redirect:/";
     }
 
-    // GET /api/tasks
-    @GetMapping
-    public List<Task> getAllTasks() {
-        return taskService.getAllTasks();
+    @PostMapping("/tasks/done/{title}")
+    public String markTaskDone(@PathVariable String title) {
+        taskService.markDone(title);
+        return "redirect:/";
     }
 
-    // GET /api/tasks/top?n=3
-    @GetMapping("/top")
-    public List<Task> getTopNTasks(@RequestParam(defaultValue = "3") int n) {
-        return taskService.getTopNTasks(n);
-    }
-
-    // DELETE /api/tasks?title=TaskTitle
-    @DeleteMapping
-    public boolean markTaskDone(@RequestParam String title) {
-        return taskService.markDone(title);
-    }
 }
