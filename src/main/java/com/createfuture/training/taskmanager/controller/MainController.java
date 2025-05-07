@@ -29,4 +29,11 @@ public class MainController {
         taskService.addTask(task);
         return "redirect:/";
     }
+
+    @PostMapping("/tasks/done/{title}")
+    public String markTaskDone(@PathVariable String title) {
+        taskService.markDone(title);
+        return "redirect:/";
+    }
+
 }
