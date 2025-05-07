@@ -2,6 +2,7 @@ package com.createfuture.training.taskmanager.service;
 
 import com.createfuture.training.taskmanager.model.Task;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -21,12 +22,14 @@ public class TaskService {
     }
 
     public List<Task> getTopNTasks(int n) {
-        return taskQueue.stream()
-                .limit(n)
-                .collect(Collectors.toList());
+        return taskQueue.stream().limit(n).collect(Collectors.toList());
     }
 
     public boolean markDone(String title) {
         return taskQueue.removeIf(task -> task.getTitle().equals(title));
+    }
+
+    public void clearTasks() {
+        taskQueue.clear();
     }
 }
