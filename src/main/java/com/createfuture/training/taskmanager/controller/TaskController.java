@@ -31,8 +31,9 @@ public class TaskController {
     }
 
     @PostMapping("/tasks/done/{title}")
-    public String markTaskDone(@PathVariable String title) {
+    public String markTaskDone(@PathVariable String title, Model model) {
         taskService.markDone(title);
+        model.addAttribute("tasks", taskService.getAllTasks());
         return "redirect:/";
     }
 
