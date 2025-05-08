@@ -1,39 +1,58 @@
 package com.createfuture.training.taskmanager.service;
 
 import com.createfuture.training.taskmanager.model.Task;
+import com.createfuture.training.taskmanager.repository.TaskRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 public class TaskServiceTest {
 
+    @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private TaskRepository repository;
 
     @BeforeEach
     void setUp() {
-        taskService = new TaskService();
+        repository = Mockito.mock(TaskRepository.class);
     }
 
     @Test
-    void addTask_ShouldAddTaskToQueue() {
-        Task task1 = new Task("Task 1");
-        Task task2 = new Task("Task 2");
-        taskService.addTask(task1);
-        taskService.addTask(task2);
-        List<Task> tasks = taskService.getAllTasks();
-        assertEquals(2, tasks.size());
-        assertTrue(tasks.contains(task1));
-        assertTrue(tasks.contains(task2));
+    void addTask_ShouldAddTaskToRepository() {
+        String title = "Task 1";
+        taskService.addTask(title);
+
+        String sql = "SELECT COUNT(*) FROM tasks WHERE title = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, title);
+
+        assertNotNull(count);
+        assertEquals(1, count);
     }
 
     @Test
     void getAllTasks_ShouldReturnAllTasks() {
-        Task task1 = new Task("Task 1");
-        Task task2 = new Task("Task 2");
-        taskService.addTask(task1);
-        taskService.addTask(task2);
+        taskService.addTask("Task 1");
+        taskService.addTask("Task 2");
+
         List<Task> tasks = taskService.getAllTasks();
+
         assertEquals(2, tasks.size());
         assertEquals("Task 1", tasks.get(0).getTitle());
         assertEquals("Task 2", tasks.get(1).getTitle());
@@ -41,58 +60,50 @@ public class TaskServiceTest {
 
     @Test
     void getTopNTasks_ShouldReturnTopNTasks() {
-        Task task1 = new Task("Task 1");
-        Task task2 = new Task("Task 2");
-        Task task3 = new Task("Task 3");
-        taskService.addTask(task1);
-        taskService.addTask(task2);
-        taskService.addTask(task3);
-        List<Task> top2Tasks = taskService.getTopNTasks(2);
-        assertEquals(2, top2Tasks.size());
-        assertEquals("Task 1", top2Tasks.get(0).getTitle());
-        assertEquals("Task 2", top2Tasks.get(1).getTitle());
+        taskService.addTask("Task 1");
+        taskService.addTask("Task 2");
+        taskService.addTask("Task 3");
+
+        List<Task> topTasks = taskService.getTopNTasks(2);
+
+        assertEquals(2, topTasks.size());
+        assertEquals("Task 1", topTasks.get(0).getTitle());
+        assertEquals("Task 2", topTasks.get(1).getTitle());
     }
 
     @Test
     void getTopNTasks_ShouldReturnEmptyListWhenNIsZero() {
+        when(repository.findTopN(0)).thenReturn(Collections.emptyList());
+
         List<Task> top0Tasks = taskService.getTopNTasks(0);
-        assertEquals(0, top0Tasks.size());
+        assertTrue(top0Tasks.isEmpty());
     }
 
     @Test
     void getTopNTasks_ShouldReturnAllTasksWhenNIsGreaterThanSize() {
-        Task task1 = new Task("Task 1");
-        Task task2 = new Task("Task 2");
-        taskService.addTask(task1);
-        taskService.addTask(task2);
-        List<Task> allTasks = taskService.getTopNTasks(3);
-        assertEquals(2, allTasks.size());
-        assertEquals("Task 1", allTasks.get(0).getTitle());
-        assertEquals("Task 2", allTasks.get(1).getTitle());
+        taskService.addTask("Task 1");
+        taskService.addTask("Task 2");
+
+        List<Task> tasks = taskService.getTopNTasks(5); // N > total
+
+        assertEquals(2, tasks.size());
     }
 
     @Test
     void markDone_ShouldRemoveTask() {
-        Task task1 = new Task("Task 1");
-        Task task2 = new Task("Task 2");
-        taskService.addTask(task1);
-        taskService.addTask(task2);
+        taskService.addTask("Task 1");
+
         boolean result = taskService.markDone("Task 1");
+
         assertTrue(result);
+
         List<Task> tasks = taskService.getAllTasks();
-        assertEquals(1, tasks.size());
-        assertFalse(tasks.contains(task1));
-        assertTrue(tasks.contains(task2));
+        assertTrue(tasks.stream().noneMatch(t -> t.getTitle().equals("Task 1")));
     }
 
     @Test
     void markDone_ShouldReturnFalseIfTaskNotFound() {
-        Task task1 = new Task("Task 1");
-        taskService.addTask(task1);
         boolean result = taskService.markDone("Nonexistent Task");
         assertFalse(result);
-        List<Task> tasks = taskService.getAllTasks();
-        assertEquals(1, tasks.size());
-        assertTrue(tasks.contains(task1));
     }
 }

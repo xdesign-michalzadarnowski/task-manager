@@ -52,7 +52,7 @@ public class TaskControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
 
-        verify(taskService).addTask(Mockito.argThat(task -> task.getTitle().equals("New Task")));
+        verify(taskService).addTask(Mockito.argThat(title -> title.equals("New Task")));
     }
 
     @Test

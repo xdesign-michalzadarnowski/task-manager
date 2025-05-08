@@ -5,7 +5,7 @@ It includes a user interface for adding and completing tasks.
 
 ## Requirements
 
-* Java 17+
+* Java 21+
 * Gradle
 
 ## Running the Application
