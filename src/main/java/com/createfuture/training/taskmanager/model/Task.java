@@ -19,6 +19,11 @@ public class Task {
         this.title = title;
     }
 
+    public Task(long id, String title) {
+        this.id = id;
+        this.title = title;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }

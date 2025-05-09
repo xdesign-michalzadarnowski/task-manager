@@ -26,8 +26,8 @@ public class TaskService {
         return taskRepository.findTopN(n);
     }
 
-    public boolean markDone(String title) {
-        return taskRepository.deleteByTitle(title) > 0;
+    public boolean markDone(Long id) {
+        return taskRepository.deleteById(id) > 0;
     }
 
     public void resetTasks() {

@@ -16,7 +16,7 @@ public class TaskRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Task> taskMapper = (rs, rowNum) -> new Task(rs.getString("title"));
+    private final RowMapper<Task> taskMapper = (rs, rowNum) -> new Task(rs.getLong("id"), rs.getString("title"));
 
     public void addTask(String title) {
         String sql = "INSERT INTO tasks (title) VALUES ('" + title + "')";
@@ -27,8 +27,8 @@ public class TaskRepository {
         return jdbcTemplate.query("SELECT * FROM tasks", taskMapper);
     }
 
-    public int deleteByTitle(String title) {
-        return jdbcTemplate.update("DELETE FROM tasks WHERE title = ?", title);
+    public int deleteById(Long id) {
+        return jdbcTemplate.update("DELETE FROM tasks WHERE id = ?", id);
     }
 
     public List<Task> findTopN(int n) {

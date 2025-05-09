@@ -7,6 +7,7 @@ It includes a user interface for adding and completing tasks.
 
 * Java 21+
 * Gradle
+* H2 Database (embedded, runs in-memory)
 
 ## Running the Application
 
@@ -45,14 +46,16 @@ To run all unit tests:
 
 ## Project Structure
 
-* `Task` - The model representing a single task.
-* `TaskService` - The service layer for managing tasks.
-* `MainController` - Handles rendering the Thymeleaf template.
-* `TaskController` - Provides the REST API endpoints.
-* `templates/tasks.html` - The Thymeleaf view.
-* `static/style.css` - Styling for the UI.
+* `Task` – The model representing a single task.
+* `TaskRepository` – A simple repository using `JdbcTemplate` for data access.
+* `TaskService` – The service layer for managing task logic.
+* `TaskController` – REST API endpoints for interacting with tasks.
+* `templates/tasks.html` – The Thymeleaf front-end.
+* `static/style.css` – Styling for the UI.
+
 
 ## Notes
 
-* Tasks are stored in memory and are not persisted.
-* You can modify the controller or service to integrate with a database if needed.
+* Task data is stored in an embedded H2 in-memory database.
+* Tables are created automatically on startup.
+* You can view the H2 console at `http://localhost:8080/h2-console`.

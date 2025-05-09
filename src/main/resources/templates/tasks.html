@@ -22,8 +22,9 @@
         <ul>
             <li th:each="task : ${tasks}" class="task-item">
                 <span th:text="${task.title}" class="task-title">Task title</span>
-                <form th:action="@{'/tasks/done/' + ${task.title}}" method="post">
-                    <button type="submit" class="done-button">Done</button>
+                <form th:action="@{/tasks/done}" method="post" style="display:inline">
+                    <input type="hidden" name="id" th:value="${task.id}"/>
+                    <button type="submit">Done</button>
                 </form>
             </li>
         </ul>
