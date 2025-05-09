@@ -18,9 +18,19 @@ public class TaskRepository {
 
     private final RowMapper<Task> taskMapper = (rs, rowNum) -> new Task(rs.getLong("id"), rs.getString("title"));
 
-    public void addTask(String title) {
+    public Task addTask(String title) {
         String sql = "INSERT INTO tasks (title) VALUES ('" + title + "')";
         jdbcTemplate.execute(sql);
+        return getLastInsertedTaskByTitle(title);
+    }
+
+    public Task getLastInsertedTaskByTitle(String title) {
+        String sql = "SELECT * FROM tasks WHERE title = ? ORDER BY id DESC LIMIT 1";
+        List<Task> tasks = jdbcTemplate.query(sql, taskMapper, title);
+        if (tasks.isEmpty()) {
+            return null;
+        }
+        return tasks.get(0);
     }
 
     public List<Task> findAll() {

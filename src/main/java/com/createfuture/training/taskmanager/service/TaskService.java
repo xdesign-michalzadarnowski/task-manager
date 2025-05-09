@@ -14,8 +14,8 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public void addTask(String title) {
-        taskRepository.addTask(title);
+    public Task addTask(String title) {
+        return taskRepository.addTask(title);
     }
 
     public List<Task> getAllTasks() {
