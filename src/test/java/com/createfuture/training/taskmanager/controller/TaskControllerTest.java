@@ -57,10 +57,11 @@ public class TaskControllerTest {
 
     @Test
     void postMarkTaskDone_ShouldCallService() throws Exception {
-        mockMvc.perform(post("/tasks/done/Test Task"))
+        mockMvc.perform(post("/tasks/done")
+                        .param("id", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
 
-        verify(taskService).markDone("Test Task");
+        verify(taskService).markDone(1L); // Verifying the id is passed as a Long
     }
 }

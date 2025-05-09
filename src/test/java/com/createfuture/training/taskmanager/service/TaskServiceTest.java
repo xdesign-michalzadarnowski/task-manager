@@ -91,19 +91,21 @@ public class TaskServiceTest {
 
     @Test
     void markDone_ShouldRemoveTask() {
-        taskService.addTask("Task 1");
+        Task task = new Task("Task 1");
+        taskService.addTask(task.getTitle());
 
-        boolean result = taskService.markDone("Task 1");
+        Long taskId = taskService.getAllTasks().get(0).getId(); // Retrieve the ID of the added task
+        boolean result = taskService.markDone(taskId);
 
         assertTrue(result);
 
         List<Task> tasks = taskService.getAllTasks();
-        assertTrue(tasks.stream().noneMatch(t -> t.getTitle().equals("Task 1")));
+        assertTrue(tasks.stream().noneMatch(t -> t.getId().equals(taskId)));
     }
 
     @Test
     void markDone_ShouldReturnFalseIfTaskNotFound() {
-        boolean result = taskService.markDone("Nonexistent Task");
+        boolean result = taskService.markDone(999L); // Use a non-existent ID
         assertFalse(result);
     }
 }
