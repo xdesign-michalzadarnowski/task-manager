@@ -1,0 +1,27 @@
+{
+  "name": "task-manager",
+  "version": "1.0.0",
+  "description": "This is a simple task management web application built with Spring Boot and Thymeleaf.  It includes a user interface for adding and completing tasks.",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tvergilio/task-manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/tvergilio/task-manager/issues"
+  },
+  "homepage": "https://github.com/tvergilio/task-manager#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "playwright": "^1.52.0"
+  }
+}
