@@ -16,11 +16,15 @@ public class TaskRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Task> taskMapper = (rs, rowNum) -> new Task(rs.getLong("id"), rs.getString("title"));
+    private final RowMapper<Task> taskMapper = (rs, rowNum) -> new Task(
+            rs.getLong("id"),
+            rs.getString("title"),
+            rs.getBoolean("done")
+    );
 
     public Task addTask(String title) {
-        String sql = "INSERT INTO tasks (title) VALUES ('" + title + "')";
-        jdbcTemplate.execute(sql);
+        String sql = "INSERT INTO tasks (title, done) VALUES (?, ?)";
+        jdbcTemplate.update(sql, title, false);
         return getLastInsertedTaskByTitle(title);
     }
 
@@ -48,5 +52,21 @@ public class TaskRepository {
 
     public void reset() {
         jdbcTemplate.execute("DELETE FROM tasks");
+    }
+
+    public Task findById(Long id) {
+        String sql = "SELECT * FROM tasks WHERE id = ?";
+        List<Task> tasks = jdbcTemplate.query(sql, taskMapper, id);
+        return tasks.isEmpty() ? null : tasks.get(0);
+    }
+
+    public int markDoneById(Long id) {
+        String sql = "UPDATE tasks SET done = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, true, id);
+    }
+
+    public int updateTask(Task task) {
+        String sql = "UPDATE tasks SET title = ?, done = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, task.getTitle(), task.isDone(), task.getId());
     }
 }

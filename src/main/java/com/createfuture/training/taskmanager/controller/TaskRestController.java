@@ -43,7 +43,21 @@ public class TaskRestController {
     // DELETE /api/tasks/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        boolean removed = taskService.markDone(id);
-        return removed ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        boolean deleted = taskService.deleteTask(id);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+    // PATCH /api/tasks/{id}/done
+    @PatchMapping("/{id}/done")
+    public ResponseEntity<Void> markTaskAsDone(@PathVariable Long id) {
+        boolean markedDone = taskService.markDone(id);
+        return markedDone ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+    // PUT /api/tasks/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
+        Task updatedTask = taskService.updateTask(id, task.getTitle());
+        return updatedTask != null ? ResponseEntity.ok(updatedTask) : ResponseEntity.notFound().build();
     }
 }

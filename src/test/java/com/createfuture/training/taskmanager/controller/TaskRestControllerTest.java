@@ -67,9 +67,9 @@ class TaskRestControllerTest {
     }
 
     @Test
-    @DisplayName("DELETE /api/tasks/{id} should delete a task if it exists")
+    @DisplayName("DELETE /api/tasks/{id} should delete a task")
     void shouldDeleteTask() throws Exception {
-        when(taskService.markDone(1L)).thenReturn(true);
+        when(taskService.deleteTask(1L)).thenReturn(true);
 
         mockMvc.perform(delete("/api/tasks/1"))
                 .andExpect(status().isNoContent());
@@ -82,5 +82,27 @@ class TaskRestControllerTest {
 
         mockMvc.perform(delete("/api/tasks/99"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("PUT /api/tasks/{id} should update a task")
+    void shouldUpdateTask() throws Exception {
+        Task updatedTask = new Task(1L, "Updated Task");
+        when(taskService.updateTask(1L, "Updated Task")).thenReturn(updatedTask);
+
+        mockMvc.perform(put("/api/tasks/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Updated Task\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", is("Updated Task")));
+    }
+
+    @Test
+    @DisplayName("PATCH /api/tasks/{id}/done should mark a task as done")
+    void shouldMarkTaskAsDone() throws Exception {
+        when(taskService.markDone(1L)).thenReturn(true);
+
+        mockMvc.perform(patch("/api/tasks/1/done"))
+                .andExpect(status().isNoContent());
     }
 }

@@ -19,7 +19,10 @@ public class TaskService {
     }
 
     public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+        // Only return tasks that are not done
+        return taskRepository.findAll().stream()
+                .filter(task -> !task.isDone())
+                .toList(); 
     }
 
     public List<Task> getTopNTasks(int n) {
@@ -27,10 +30,24 @@ public class TaskService {
     }
 
     public boolean markDone(Long id) {
-        return taskRepository.deleteById(id) > 0;
+        // Mark the task as done, but do not delete it
+        return taskRepository.markDoneById(id) > 0;
     }
 
     public void resetTasks() {
         taskRepository.reset();
+    }
+
+    public boolean deleteTask(Long id) {
+        return taskRepository.deleteById(id) > 0;
+    }
+
+    public Task updateTask(Long id, String newTitle) {
+        Task task = taskRepository.findById(id);
+        if (task != null) {
+            task.setTitle(newTitle);
+            taskRepository.updateTask(task);
+        }
+        return task;
     }
 }
