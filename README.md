@@ -5,10 +5,33 @@ It includes a user interface for adding and completing tasks.
 
 ## Requirements
 
-* Java 21+
+* Java 21+ (see instructions below for installation and setting JAVA_HOME on macOS)
 * Gradle
-* H2 Database (embedded, runs in-memory)
-* Node.js and npm (for running end-to-end tests)
+* Node.js 23.7.0
+* npm 10.2.4+ (for running end-to-end tests)
+
+### Installing Java 21+ on macOS
+
+1. Install Homebrew if you don't have it.
+   
+2. Install OpenJDK 21:
+   ```sh
+   brew install openjdk@21
+   ```
+3. Add Java to your PATH and set JAVA_HOME (add these lines to your ~/.zshrc or ~/.bash_profile):
+   ```sh
+   export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH"
+   export JAVA_HOME="/opt/homebrew/opt/openjdk@21"
+   ```
+   Then reload your shell:
+   ```sh
+   source ~/.zshrc  # or source ~/.bash_profile
+   ```
+4. Verify installation:
+   ```sh
+   java -version
+   echo $JAVA_HOME
+   ```
 
 ## Running the Application
 
@@ -95,36 +118,9 @@ cd tests
 npx playwright test e2e/garfield-search.spec.ts
 ```
 
-#### Using Model Context Protocol (MCP) for Test Development
+## End-to-End Test Development
 
-To create new tests using the Model Context Protocol (MCP):
-
-1. Start the MCP server:
-
-   ```sh
-   cd tests
-   npx @playwright/test run-server --port=3000
-   ```
-
-2. Create a client script similar to `mcp-client.js` to test your scenario
-3. Run the client to verify the steps work:
-
-   ```sh
-   node mcp-client.js
-   ```
-
-4. Once verified, create a Playwright test file in the `tests/e2e` directory
-
-#### Creating New Tests
-
-Follow this workflow to create new end-to-end tests:
-
-1. Define your test scenario (e.g., "Navigate to website X, perform action Y, verify result Z")
-2. Run all steps using the Playwright MCP to validate they work
-3. Create a TypeScript test file in the `tests/e2e` directory following the `.spec.ts` format
-4. Execute and refine the test until it passes reliably
-
-You can also use the prompt template in `tests/prompts/generate_e2e_test.md` with GitHub Copilot in agent mode to help generate tests.
+For detailed instructions on using the Model Context Protocol (MCP) to develop and create new end-to-end tests, see the [MCP Test Development Guide](docs/mcp-test-development.md).
 
 ## Project Structure
 
@@ -133,7 +129,8 @@ You can also use the prompt template in `tests/prompts/generate_e2e_test.md` wit
 * `Task` – The model representing a single task.
 * `TaskRepository` – A simple repository using `JdbcTemplate` for data access.
 * `TaskService` – The service layer for managing task logic.
-* `TaskController` – REST API endpoints for interacting with tasks.
+* `TaskController` – Handles web requests and renders the Thymeleaf UI.
+* `TaskRestController` – REST API endpoints for task management (API version).
 * `templates/tasks.html` – The Thymeleaf front-end.
 * `static/style.css` – Styling for the UI.
 
@@ -149,5 +146,6 @@ You can also use the prompt template in `tests/prompts/generate_e2e_test.md` wit
 ## Notes
 
 * Task data is stored in an embedded H2 in-memory database.
+* H2 is pulled automatically by Gradle, there is no need to install it manually.
 * Tables are created automatically on startup.
 * You can view the H2 console at `http://localhost:8080/h2-console`.
