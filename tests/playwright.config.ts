@@ -3,11 +3,27 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
+  /* Maximum time one test can run for. */
+  timeout: 30 * 1000,
+  expect: {
+    /**
+     * Maximum time expect() should wait for the condition to be met.
+     * For example in `await expect(locator).toHaveText();`
+     */
+    timeout: 5000
+  },
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 0,
   workers: 1,
   reporter: 'html',
+  // MCP (Model Context Protocol) server configuration
+  webServer: {
+    command: 'npx @playwright/mcp@latest',
+    port: 62700, // MCP port, you can change this
+    timeout: 120 * 1000,
+    reuseExistingServer: !process.env.CI,
+  },
   use: {
     // No baseURL needed as tests specify full URLs
     trace: 'on',

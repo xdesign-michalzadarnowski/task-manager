@@ -70,32 +70,72 @@ To run all unit tests:
 ./gradlew test
 ```
 
-### Running End-to-End Tests with Playwright
+## End-to-End Testing with Playwright and VS Code
 
-This project includes Playwright end-to-end tests that simulate user interactions with the application.
+This project uses [Playwright](https://playwright.dev/) for end-to-end browser testing. Follow these steps to set up and use Playwright with VS Code integration.
 
-#### Prerequisites
+### Prerequisites
 
-1. Install Node.js dependencies:
+- Node.js and npm (see Requirements above)
+- VS Code
 
-   ```sh
-   cd tests
-   npm install
-   ```
+### 1. Install Playwright and Dependencies
 
-2. Install Playwright browsers:
+In the `tests` directory, run:
 
-   ```sh
-   npx playwright install
-   ```
+```sh
+npm install
+npx playwright install
+```
 
-3. Install the GitHub Copilot MCP VS Code extension:
-   - Open VS Code
-   - Go to Extensions (Ctrl+Shift+X or Cmd+Shift+X)
-   - Search for "GitHub Copilot MCP"
-   - Install the extension by Automata Labs (`automatalabs.copilot-mcp`)
+### 2. Install Playwright Test for VSCode Extension
 
-#### Running Tests
+1. Open VS Code
+2. Go to Extensions (Ctrl+Shift+X or Cmd+Shift+X)
+3. Search for "Playwright Test for VSCode"
+4. Install the extension by Microsoft (`ms-playwright.playwright`)
+
+### 3. Install Copilot MCP VS Code Extension
+
+For advanced test authoring with Model Context Protocol (MCP):
+- Open VS Code
+- Go to Extensions
+- Search for "Copilot MCP"
+- Install the extension by Automata Labs (`automatalabs.copilot-mcp`)
+
+### 4. Install `code` Command in PATH (VS Code)
+
+1. Press Command+Shift+P in VS Code
+2. Type `shell command`
+3. Select `Install 'code' command in PATH`
+
+### 5. Register Playwright MCP Server with VS Code
+
+Run in your terminal:
+
+```sh
+code --add-mcp '{"name":"playwright","command":"npx","args":["@playwright/mcp@latest"]}'
+```
+
+### 6. MCP Server Configuration Options
+
+You have two ways to run the MCP server:
+
+#### Option A: Automatic MCP Server (via playwright.config.ts)
+- Best for simple test runs
+- The MCP server starts automatically when you run tests
+- Uses the `webServer` config in `playwright.config.ts` (enabled by default)
+
+#### Option B: Manual MCP Server (separate terminal)
+- Best for interactive agent usage, debugging, or developing tests
+- Start the MCP server in a dedicated terminal:
+  ```sh
+  cd tests
+  npx @playwright/mcp@latest
+  ```
+- Comment out the `webServer` section in `playwright.config.ts` to prevent duplicate servers
+
+### 7. Running Playwright Tests
 
 To run all Playwright tests:
 
@@ -118,9 +158,7 @@ cd tests
 npx playwright test e2e/garfield-search.spec.ts
 ```
 
-## End-to-End Test Development
-
-For detailed instructions on using the Model Context Protocol (MCP) to develop and create new end-to-end tests, see the [MCP Test Development Guide](docs/mcp-test-development.md).
+For more on developing new end-to-end tests, see the [MCP Test Development Guide](docs/mcp-test-development.md).
 
 ## Project Structure
 
