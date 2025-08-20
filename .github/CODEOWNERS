@@ -1,4 +1,8 @@
 # CODEOWNERS
 
-# Assign ownership of all files to the explore-team
-* @xSolutions365/explore-team
+# Protect sensitive configuration files and components containing secrets
+src/main/resources/internal/ @xSolutions365/explore-team
+src/main/java/com/createfuture/training/taskmanager/DataLoader.java @xSolutions365/explore-team
+
+# Protect the CODEOWNERS file itself 
+.github/CODEOWNERS @xSolutions365/explore-team
